@@ -1,10 +1,9 @@
 import { Button, Card, Input } from 'antd'
 import axios from 'axios'
 import Router from 'next/router'
-import path from 'path'
 import { useEffect, useState } from 'react'
 
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000'
+const API_HOST = process.env.API_HOST || 'http://localhost:8000'
 
 export default function Login() {
   const [height, setHeight] = useState(0)
@@ -17,12 +16,14 @@ export default function Login() {
   }, [])
 
   const handleLogin = () => {
+    const url = new URL('/login', API_HOST).href
     axios
-      .post(path.join(SERVER_URL, '/api/login'), {
+      .post(url, {
         username,
         password,
       })
       .then((status) => {
+        console.log(status.data)
         if (status.data.ok) {
           setShowError(false)
           Router.push('/')
@@ -66,6 +67,7 @@ export default function Login() {
             style={{ marginBottom: 12 }}
             type="password"
             placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
           />
           {showError && (
             <p style={{ color: '#c04', textAlign: 'center' }}>
