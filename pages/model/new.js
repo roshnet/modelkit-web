@@ -1,5 +1,6 @@
 import { CloudUploadOutlined } from '@ant-design/icons'
-import { Button, Col, Row, Upload } from 'antd'
+import { Button, Col, message, Row, Upload } from 'antd'
+import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import nookies from 'nookies'
 import { useEffect, useState } from 'react'
@@ -11,6 +12,8 @@ const uploadURL = new URL('/model/create', API_HOST).href
 export default function CreateModel() {
   const [token, setToken] = useState('')
   const [username, setUsername] = useState('')
+  const [file, setFile] = useState()
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const cookies = nookies.get()
@@ -20,6 +23,30 @@ export default function CreateModel() {
       setUsername(jwt.decode(token)['iss'])
     }
   }, [])
+
+  const beforeUpload = (f) => {
+    setFile(f)
+    return false // Prevent auto-upload
+  }
+
+  // Manual upload with axios POST and FormData
+  const handleUpload = () => {
+    const formData = new FormData()
+    formData.append('model', file)
+    setLoading(true)
+    axios
+      .post(uploadURL, formData, {
+        headers: { 'X-Model-Author': username, 'X-Auth-Token': token },
+      })
+      .then(() => {
+        setLoading(false)
+        message.success({ content: 'Upload successful!' })
+      })
+      .catch(() => {
+        setLoading(false)
+        message.error({ content: 'Something went wrong :(' })
+      })
+  }
 
   return (
     <AppContainer>
@@ -33,6 +60,11 @@ export default function CreateModel() {
           <Upload
             action={uploadURL}
             name="model"
+            beforeUpload={(f) => beforeUpload(f)}
+            onRemove={() => {
+              setFile(null)
+            }}
+            maxCount={1}
             progress={{
               strokeColor: {
                 '0%': '#108ee9',
@@ -41,12 +73,24 @@ export default function CreateModel() {
               strokeWidth: 3,
               format: (percent) => `${parseFloat(percent.toFixed(2))}%`,
             }}
-            headers={{ 'X-Model-Author': username, 'X-Auth-Token': token }}
           >
-            <Button icon={<CloudUploadOutlined />} size="large" type="primary">
-              Start Upload
+            <Button icon={<CloudUploadOutlined />} size="large" type="dashed">
+              Select file
             </Button>
           </Upload>
+        </Col>
+      </Row>
+      <Row justify="center" align="middle" style={{ marginTop: '20px' }}>
+        <Col>
+          <Button
+            type="primary"
+            size="large"
+            loading={loading}
+            disabled={!file}
+            onClick={handleUpload}
+          >
+            Upload
+          </Button>
         </Col>
       </Row>
     </AppContainer>
