@@ -19,6 +19,8 @@ export default function CreateModel() {
   const [file, setFile] = useState()
   const [loading, setLoading] = useState(false)
 
+  const [form] = Form.useForm()
+
   useEffect(() => {
     const cookies = nookies.get()
     const token = cookies['accessToken']
@@ -47,7 +49,7 @@ export default function CreateModel() {
       })
       .then(() => {
         setLoading(false)
-        message.success({ content: 'Upload successful!' })
+        message.success({ content: 'Model added!' })
       })
       .catch(() => {
         setLoading(false)
@@ -57,48 +59,74 @@ export default function CreateModel() {
 
   return (
     <AppContainer>
-      <Row justify="center" align="middle">
+      <Row>
         <Col>
           <h1>Upload your model's binary</h1>
         </Col>
       </Row>
-      <Form labelCol={{ xs: { span: 24 }, sm: { span: 2 } }}>
-        <Form.Item
-          label="Model Name"
-          tooltip="Your model will be called by this name."
-        >
-          <Input placeholder="Set a name for your model" />
-        </Form.Item>
-        <Form.Item label="Upload">
-          <Upload
-            action={uploadURL}
-            name="model"
-            beforeUpload={(f) => beforeUpload(f)}
-            onRemove={() => {
-              setFile(null)
-            }}
-            maxCount={1}
-            progress={{
-              strokeColor: {
-                '0%': '#108ee9',
-                '100%': '#87d068',
-              },
-              strokeWidth: 3,
-              format: (percent) => `${parseFloat(percent.toFixed(2))}%`,
-            }}
+      <Row justify="center" style={{ marginTop: 42 }}>
+        <Col span={18}>
+          <Form
+            labelCol={{ xs: { span: 24 }, sm: { span: 8 } }}
+            form={form}
+            colon={false}
           >
-            <Button icon={<CloudUploadOutlined />} size="large" type="dashed">
-              Select file
-            </Button>
-          </Upload>
-        </Form.Item>
-        <Form.Item
-          label="Model ID"
-          tooltip="This is used to uniquely identify your model"
-        >
-          <Input placeholder="" disabled />
-        </Form.Item>
-      </Form>
+            <Form.Item
+              label="Model Name"
+              rules={[
+                {
+                  required: true,
+                  max: 10,
+                },
+              ]}
+              tooltip="Your model will be searched for by this name."
+            >
+              <Input placeholder="Type a model name..." required />
+            </Form.Item>
+            <Form.Item label="Upload binary">
+              <Upload
+                action={uploadURL}
+                name="model"
+                beforeUpload={(f) => beforeUpload(f)}
+                onRemove={() => {
+                  setFile(null)
+                }}
+                maxCount={1}
+                progress={{
+                  strokeColor: {
+                    '0%': '#108ee9',
+                    '100%': '#87d068',
+                  },
+                  strokeWidth: 3,
+                  format: (percent) => `${parseFloat(percent.toFixed(2))}%`,
+                }}
+              >
+                <Button
+                  icon={<CloudUploadOutlined />}
+                  size="large"
+                  type="dashed"
+                >
+                  Select file
+                </Button>
+              </Upload>
+            </Form.Item>
+            <Form.Item label="Description">
+              <TextArea
+                placeholder="Include the structure of test data required by the model"
+                rows={10}
+                autoSize={false}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item
+              label="Model ID"
+              tooltip="This is used to uniquely identify your model"
+            >
+              <Input placeholder="Auto-generated model ID" disabled />
+            </Form.Item>
+          </Form>
+        </Col>
+      </Row>
       <Row justify="center">
         <Button
           type="primary"
@@ -107,7 +135,7 @@ export default function CreateModel() {
           disabled={!file}
           onClick={handleUpload}
         >
-          Upload
+          Add Model
         </Button>
       </Row>
     </AppContainer>
