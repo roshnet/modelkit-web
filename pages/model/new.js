@@ -7,7 +7,8 @@ import { useEffect, useState } from 'react'
 import AppContainer from '../../layouts/App'
 
 const API_HOST = process.env.API_HOST || 'http://localhost:8000'
-const uploadURL = new URL('/model/create', API_HOST).href
+const detailsUploadURL = new URL('/model/create', API_HOST).href
+const fileUploadURL = new URL('/model/upload', API_HOST).href
 
 const { TextArea } = Input
 
@@ -38,18 +39,27 @@ export default function CreateModel() {
   // Manual upload with axios POST and FormData
   const handleUpload = () => {
     setLoading(true)
-    const formData = new FormData()
-    formData.append('model', file)
-    formData.append('name', name)
-    formData.append('username', username)
-    formData.append('description', description)
+    const modelDetails = {}
+    // modelDetails.append('model', file)
+    modelDetails.name = name
+    modelDetails.username = username
+    modelDetails.description = description
     axios
-      .post(uploadURL, formData, {
-        headers: { 'X-Model-Author': username, 'X-Auth-Token': token },
+      .post(detailsUploadURL, modelDetails, {
+        headers: { 'X-Auth-Token': token },
       })
-      .then(() => {
-        setLoading(false)
-        message.success({ content: 'Model added!' })
+      .then((resp) => {
+        const modelId = resp.data['uid']
+        const modelFile = new FormData()
+        modelFile.append('model', file)
+        axios
+          .post(fileUploadURL, modelFile, {
+            headers: { 'X-Model-Id': modelId, 'X-Auth-Token': token },
+          })
+          .then(() => {
+            setLoading(false)
+            message.success({ content: 'Model added!' })
+          })
       })
       .catch(() => {
         setLoading(false)
@@ -72,7 +82,7 @@ export default function CreateModel() {
             colon={false}
           >
             <Form.Item
-              label="Model Name"
+              label="Model title"
               rules={[
                 {
                   required: true,
@@ -81,11 +91,15 @@ export default function CreateModel() {
               ]}
               tooltip="Your model will be searched for by this name."
             >
-              <Input placeholder="Type a model name..." required />
+              <Input
+                placeholder="Type a model name..."
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </Form.Item>
             <Form.Item label="Upload binary">
               <Upload
-                action={uploadURL}
+                action={detailsUploadURL}
                 name="model"
                 beforeUpload={(f) => beforeUpload(f)}
                 onRemove={() => {
