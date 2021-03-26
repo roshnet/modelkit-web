@@ -1,22 +1,21 @@
 import { Button, Col, Divider, Row } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import nookies from 'nookies'
 import { useEffect, useState } from 'react'
 import Header from '../components/Header'
+import { getUsernameFromToken } from '../utils'
 
 export default function AppContainer(props) {
-  const [token, setToken] = useState(null)
+  const [username, setUsername] = useState(null)
   const router = useRouter()
 
   useEffect(() => {
-    const cookies = nookies.get()
-    const accessToken = cookies['accessToken']
-    if (accessToken) setToken(accessToken)
+    const user = getUsernameFromToken()
+    if (user) setUsername(user)
   }, [])
 
   // Redirect to login if no token present
-  if (!token && !props.open) {
+  if (!username && !props.open) {
     return (
       <div
         style={{
