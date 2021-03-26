@@ -1,7 +1,25 @@
-import { Col, Divider, Image, Row } from 'antd'
+import { Card, Col, Divider, Image, Row, Typography } from 'antd'
+import axios from 'axios'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import AppContainer from '../layouts/App'
+import { getUsernameFromToken } from '../utils'
+
+const API_HOST = process.env.API_HOST || 'http://localhost:8000'
+
+const { Title } = Typography
 
 export default function Dashboard() {
+  const [models, setModels] = useState([])
+
+  useEffect(() => {
+    const url = new URL('/model/fetch-all', API_HOST).href
+    const username = getUsernameFromToken()
+    axios.get(url, { params: { username: username } }).then((resp) => {
+      setModels(resp.data['models'])
+    })
+  }, [])
+
   return (
     <AppContainer>
       <Row align="middle">
@@ -22,9 +40,27 @@ export default function Dashboard() {
       </Row>
       <Divider />
       <Row justify="start">
-        <Col>
-          <h1>Uploaded models</h1>
-        </Col>
+        <h1>Your Uploaded Models</h1>
+      </Row>
+      <Row gutter={[30, 30]}>
+        {models.map((model, idx) => {
+          return (
+            <Col flex="auto" key={idx}>
+              <Link href={`/model/${model.uid}`} prefetch={true}>
+                <Card
+                  title={<Title level={4}>{model.name}</Title>}
+                  style={{ borderColor: '#ccc' }}
+                  hoverable
+                >
+                  <p>
+                    {model.description.slice(0, 50)}
+                    {model.description.length > 50 ? <span>...</span> : null}
+                  </p>
+                </Card>
+              </Link>
+            </Col>
+          )
+        })}
       </Row>
     </AppContainer>
   )
