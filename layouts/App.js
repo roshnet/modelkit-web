@@ -1,8 +1,9 @@
-import { Button, Col, Divider, PageHeader, Row } from 'antd'
+import { Button, Col, Divider, Row } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import nookies from 'nookies'
 import { useEffect, useState } from 'react'
+import Header from '../components/Header'
 
 export default function AppContainer(props) {
   const [token, setToken] = useState(null)
@@ -15,7 +16,7 @@ export default function AppContainer(props) {
   }, [])
 
   // Redirect to login if no token present
-  if (!token) {
+  if (!token && !props.open) {
     return (
       <div
         style={{
@@ -40,15 +41,7 @@ export default function AppContainer(props) {
   return (
     <Row justify="center">
       <Col xs={22} sm={20} md={20} lg={18} xl={18} xxl={16}>
-        <PageHeader
-          extra={[
-            <Button key="1">Feed</Button>,
-            <Button key="2">Browse Models</Button>,
-            <Button key="3" type="link">
-              Logout
-            </Button>,
-          ]}
-        />
+        <Header />
         <Divider />
         {props.children}
       </Col>
