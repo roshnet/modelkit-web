@@ -9,13 +9,13 @@ export async function getServerSideProps({ params }) {
   const { uid } = params
   const url = new URL('/model/fetch-one', API_HOST).href
   const resp = await axios.get(url, { params: { uid: uid } })
-  const [model, author] = resp.data['model']
+  const { name, description, username } = resp.data['model']
 
   return {
     props: {
-      author,
-      description: model.description,
-      name: model.name,
+      author: username,
+      description,
+      name,
     },
   }
 }
