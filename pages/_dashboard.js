@@ -46,7 +46,7 @@ export default function Dashboard() {
         {models.map((model, idx) => {
           return (
             <Col flex="auto" key={idx}>
-              <Link href={`/model/${model.uid}`} prefetch={true}>
+              <Link href={`/model/${model.uid}`}>
                 <Card
                   title={<Title level={4}>{model.name}</Title>}
                   style={{ borderColor: '#ccc' }}

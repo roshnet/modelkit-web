@@ -1,9 +1,12 @@
+import { BuildOutlined } from '@ant-design/icons'
 import { Button, PageHeader } from 'antd'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { getUsernameFromToken } from '../utils'
 
 export default function Header() {
   const [username, setUsername] = useState('')
+  const router = useRouter()
 
   useEffect(() => {
     const user = getUsernameFromToken()
@@ -13,10 +16,29 @@ export default function Header() {
   if (username)
     return (
       <PageHeader
+        title={
+          <h2
+            style={{
+              fontFamily: 'mono',
+              textDecorationColor: 'Background',
+              border: 'solid 1px #ddd',
+              padding: 10,
+              backgroundColor: '#000',
+              color: '#fff',
+            }}
+          >
+            <BuildOutlined color="#fff" />
+            &nbsp;ModelKit
+          </h2>
+        }
         extra={[
-          <Button key="1">Feed</Button>,
-          <Button key="2">Browse Models</Button>,
-          <Button key="3" type="link">
+          <Button key="1" onClick={() => router.push('/feed')}>
+            Feed
+          </Button>,
+          <Button key="2" onClick={() => router.push('/model/new')}>
+            Add Model
+          </Button>,
+          <Button key="3" type="link" onClick={() => router.push('/')}>
             Logout
           </Button>,
         ]}
