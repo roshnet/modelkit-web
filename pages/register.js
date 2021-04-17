@@ -76,11 +76,9 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000',
   },
   heading: {
     textAlign: 'center',
-    color: '#fff',
     marginBottom: '-3px',
   },
 }

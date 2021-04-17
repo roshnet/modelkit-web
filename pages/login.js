@@ -1,4 +1,4 @@
-import { Button, Card, Input } from 'antd'
+import { Button, Card, Input, message } from 'antd'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { setCookie } from 'nookies'
@@ -10,7 +10,7 @@ export default function Login() {
   const [height, setHeight] = useState(0)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [showError, setShowError] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
 
@@ -20,21 +20,19 @@ export default function Login() {
 
   const handleLogin = () => {
     const url = new URL('/login', API_HOST).href
+    setLoading(true)
     axios
       .post(url, { username, password })
       .then((resp) => {
         if (resp.data['result'] === 'ok') {
           setCookie(null, 'accessToken', resp.headers['x-auth-token'])
-          setShowError(false)
           router.push('/')
-        } else {
-          setShowError(true)
         }
       })
       .catch((err) => {
-        // Do something better here like a popup or something
-        console.error('Exception caught', err)
+        message.error({ content: 'Incorrect credentials :(' })
       })
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -57,12 +55,7 @@ export default function Login() {
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
         />
-        {showError && (
-          <p style={{ color: '#c04', textAlign: 'center' }}>
-            Incorrect credentials!
-          </p>
-        )}
-        <Button block type="primary" onClick={handleLogin}>
+        <Button block type="primary" onClick={handleLogin} loading={loading}>
           Login
         </Button>
       </Card>
@@ -75,11 +68,10 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
   },
   heading: {
     textAlign: 'center',
-    color: '#fff',
     marginBottom: '-3px',
   },
 }

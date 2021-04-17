@@ -56,8 +56,8 @@ export default function Dashboard() {
                   hoverable
                 >
                   <p>
-                    {model.description.slice(0, 50)}
-                    {model.description.length > 50 ? <span>...</span> : null}
+                    {model.description.slice(0, 80)}
+                    {model.description.length > 80 ? <span>...</span> : null}
                   </p>
                 </Card>
               </Link>
