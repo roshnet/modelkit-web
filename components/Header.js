@@ -1,5 +1,6 @@
 import { BuildOutlined } from '@ant-design/icons'
 import { Button, PageHeader } from 'antd'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { getUsernameFromToken } from '../utils'
@@ -17,19 +18,22 @@ export default function Header() {
     return (
       <PageHeader
         title={
-          <h2
-            style={{
-              fontFamily: 'mono',
-              textDecorationColor: 'Background',
-              border: 'solid 1px #ddd',
-              padding: 10,
-              backgroundColor: '#000',
-              color: '#fff',
-            }}
-          >
-            <BuildOutlined color="#fff" />
-            &nbsp;ModelKit
-          </h2>
+          <Link href="/">
+            <h2
+              style={{
+                fontFamily: 'mono',
+                textDecorationColor: 'Background',
+                border: 'solid 1px #ddd',
+                padding: 10,
+                backgroundColor: '#000',
+                color: '#fff',
+                cursor: 'pointer',
+              }}
+            >
+              <BuildOutlined color="#fff" />
+              &nbsp;ModelKit
+            </h2>
+          </Link>
         }
         extra={[
           <Button key="1" onClick={() => router.push('/feed')}>

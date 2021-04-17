@@ -40,7 +40,10 @@ export default function Dashboard() {
       </Row>
       <Divider />
       <Row justify="start">
-        <h1>Your Uploaded Models</h1>
+        <Title type="secondary" level={2}>
+          Your Models
+        </Title>
+        <Divider />
       </Row>
       <Row gutter={[30, 30]}>
         {models.map((model, idx) => {
